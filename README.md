@@ -4,4 +4,4 @@ Implemented the complete gpt2 architecture and enabled loading of original weigh
 
 Provided simple function for top k sampling
 
-Work in progress - the final goal is to implement full pre training 
+Work in progress - the final goal is to initialize new weights and pretrain the model
