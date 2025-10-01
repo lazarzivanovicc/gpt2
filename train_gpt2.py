@@ -154,7 +154,7 @@ class GPT(nn.Module):
         # But since lm_head is linear it will be saved as (vocab_size, n_embd) actually and that matches with dimensions of wte
         self.transformer.wte.weight = self.lm_head.weight
     
-    def forward(self, idx):
+    def forward(self, idx, targets: None):
         # idx is as tensor containg batches B of sequences T, (B, T) - T is a sequence of token ids - idx = [[14, 2435, 1234], [345, 43567, 8067]]
         B, T = idx.size()
         assert T <= self.config.block_size, f"Cannot forward sequence of length {T}, block size is only {self.config.block_size}"
@@ -181,7 +181,11 @@ class GPT(nn.Module):
         # the next most probable token
         # The output here is (B, T, vocab_size) where in the last dimension we have 50257 logits - one for each possible token in vocab
         logits = self.lm_head(x)
-        return logits 
+
+        loss = None
+        if targets is not None:
+            loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1))
+        return logits, loss 
 
 
     @classmethod
